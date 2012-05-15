@@ -1,11 +1,36 @@
 {
-    "name": "application-name"
-  , "version": "0.0.1"
-  , "private": true
-  , "dependencies": {
-      "express": "2.5.8"
-    , "jade": ">= 0.0.1"
-		, "rtorrent": "*"
-		, "nt": "*"
-  }
+  "name": "ntor",
+  "version": "0.1.0",
+  "private": false,
+  "dependencies": {
+    "express": "2.5.8",
+    "jade": ">= 0.0.1",
+    "rtorrent": "https://github.com/FLYBYME/node-rtorrent.git",
+    "nt": "*",
+    "nodemailer": "*",
+    "mime": "*",
+    "http-proxy": "*",
+    "jsDAV": "*",
+    "findit": "*",
+    "node-native-zip": "*",
+    "socket.io": "~0.9.13"
+  },
+  "readmeFilename": "README.md",
+  "gitHead": "a85e84b0a28b43d55e4076330ce354e362eb924f",
+  "description": "ntor =====",
+  "main": "app.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/davidbanham/ntor.git"
+  },
+  "keywords": [
+    "torrent",
+    "rtorrent"
+  ],
+  "author": "david@banham.id.au",
+  "license": "BSD"
 }

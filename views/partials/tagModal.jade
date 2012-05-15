@@ -1,0 +1,21 @@
+#tagManager
+  .modal-header
+    h3 Add tag
+  .modal-body
+    .container-fluid
+      .row-fluid
+        .span12
+          form#tagForm.form-inline.modal-form
+            fieldset
+              p
+                label Choose Tag
+              select.tagSelector(ng-model="selectedTag", ng-options="tag.elements.join('/') for tag in tags", ng-change="newTag=''")
+              button.tagRemove.btn.btn-small(ng-click="removeTag(selectedTag)") Remove Tag
+              p - or -
+            fieldset
+              label Add New Tag
+              input.newTag(type='text', ng-model="newTag", ng-change="selectedTag=''")
+              button.newTagSubmit.btn.btn-small(ng-click="addTag({elements: newTag.split('/')})") Add
+            fieldset
+              .span11
+                button.btn.btn-small(ng-click="close(newTag || selectedTag)") Close

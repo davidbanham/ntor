@@ -11,8 +11,15 @@ html
     script(src='js/dt_bootstrap2.js')
     script(src='js/bootstrap-modal.js')
     script(src='js/bootstrap-alert.js')
-    script(src='js/main.js')
-  body
+    script(src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min.js")
+    script(src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular-resource.min.js")
+    script(src="js/ui-bootstrap-0.1.0-SNAPSHOT.js")
+    script(src='js/app.js')
+    script(src='js/controllers.js')
+    script(src='js/services.js')
+    script(src='/socket.io/socket.io.js')
+    script(src='js/mergify.js')
+  body(ng-app='ntor')
     .navbar.navbar-fixed-top
       .navbar-inner
         .container-fluid
@@ -21,6 +28,7 @@ html
             span.icon-bar
             span.icon-bar
           a.brand ntor
+            img#loading(src="img/pacman_yellow.gif", alt="Loading...")
           .nav-collapse
             ul.nav
               li
@@ -29,13 +37,15 @@ html
                 a(href='#tabMain', data-toggle='tab') Main
               li
                 a(href='#tabSearch', data-toggle='tab') Search
+              li
+                a#grabAuto(href='#tabAuto', data-toggle='tab') Auto
             ul.nav.pull-right
               li.dropdown
                 a.dropdown-toggle(data-toggle='dropdown', href='#') Tools
                   b.caret
-                ul.dropdown-menu
+                ul.dropdown-menu(ng-controller="UtilityCtrl")
                   li
-                    a.manageTags(href='#tagManager') Manage Tags
+                    a.manageTags(ng-click="openTagManager()") Manage Tags
                   li
                     a.changePass(href='#changePass') Change Password
                   li
@@ -43,50 +53,87 @@ html
             ul.diskInfo.nav.pull-right
     .container-fluid
       .tab-content
-        .tab-pane.active#tabMain
+        .tab-pane.active#tabMain(ng-controller="TorrentListCtrl")
           .row-fluid
             .span12
-              table#torrentList.table.table-striped.table-bordered.dTable
-                thead
-                  tr
-                    th Controls
-                    th Status
-                    th Torrent Name
-                    th.hidden Hash
-                    th.hidden Creation Date
-                tbody
-                  tr
-                    td Loading
-                    td Loading
-                    td Loading
-                    td.hidden Loading
-                    td.hidden Loading
-        .tab-pane#tabSearch
+              table.table.table-bordered
+                tr
+                  th Controls
+                  th Actions
+                  th(ng-class="selectedCls('status')", ng-click="changeSorting('status')") Status
+                  th(ng-class="selectedCls('name')", ng-click="changeSorting('name')") Torrent
+                tr(ng-repeat="torrent in torrents | orderBy:sort.column:sort.descending")
+                  td.btn-group
+                    button.btn(ng-repeat="button in torrent.remoteButtons", ng-click="remote(button, torrent)", ng-class="button.style") {{button.text || button.type}}
+                  td.btn-group
+                    button.btn(ng-repeat="button in torrent.localButtons", ng-click="local(button, torrent)", ng-class="button.style") {{button.text || button.type}}
+                  td {{torrent.statusText}}
+                  td {{torrent.name}}
+        .tab-pane#tabSearch(ng-controller="SearchCtrl")
           .row-fluid
             .span6
               form.well.form-search#searchForm
-                input.input-medium.search-query(type='text')
-                button.btn(type='submit') Search
-                select
+                input.input-medium.search-query(type='text', ng-model="expression")
+                button.btn(type='submit', ng-click="search(engine, expression)") Search
+                select(ng-model="engine")
                   - each engine in searchEngines
-                    option
-                      = engine
+                    option= engine
           .row-fluid.searchResultsContainer
             .span12
-              table#searchResults.table.table-striped.table-bordered.dTable
+              table#searchResults.table.table-striped.table-bordered
                 thead
                   tr
                     th
                     th Name
-                    th.hidden url
-                    th.hidden engine
+                tbody
+                  tr(ng-repeat="result in results")
+                    td
+                      button.btn.btn-primary(ng-click="chooseTag(result)") Download
+                    td {{result.name}}
+            .span1.pagPrev(ng-click="search(engine, expression, pagination.prev)")
+            .span11.pagNext(ng-click="search(engine, expression, pagination.next)")
+        .tab-pane#tabAuto
+          .row-fluid
+            .span12
+              table#autoList.table.table-striped.table-bordered.dTable
+                thead
+                  tr
+                    th
+                    th Yes
+                    th No
+                    th Notify
+                    th Tag
+                    th Last Hit
+                    th Frequency
+                    th.hidden Id
                 tbody
                   tr
-                    td 
-                    td 
-                    td.hidden 
-                    td.hidden 
-  .modal.hide.fade#tagModal
+                    td
+                    td
+                    td
+                    td
+                    td
+                    td
+                    td
+                    td.hidden
+          .row-fluid
+            .span12
+              form.form-inline.well
+                label Yes
+                input.yes(type='text', name='yes')
+                label No
+                input.no(type='text', name='no')
+                label Notify
+                input.notify(type='checkbox', name='notify')
+                label Tag
+                select.tag.tagSelector(name='tag')
+                label Days
+                select.frequency(name='frequency')
+                  option 1
+                  option 7
+                  option 30
+                button.newFeedTarget.btn-small Add
+  .modal.hide.fade#tagModal(ng-controller="SearchCtrl")
     .modal-header
       button.close(data-dismiss="modal") x
       h3 Add tag
@@ -95,34 +142,16 @@ html
         fieldset
           p
             label Choose Tag
-          select#downloadTag.tagSelector
-          button.tagRemove.btn-small Remove Tag
+          select#downloadTag.tagSelector(ng-model="selectedTag")
+            option(ng-repeat="tag in tags")
+              button.tagRemove.btn-small(ng-click="Tag.post({action: remove, tag: selectedTag})") Remove Tag
           p - or -
         fieldset
           label Add New Tag
-          input#downloadNewTag.newTag(type='text')
-          button.newTagSubmit.btn-small Add
+          input#downloadNewTag.newTag(type='text', ng-model="newTagText")
+            button.newTagSubmit.btn-small(ng-click="Tag.post({action: add, tag: newTagText})") Add
     .modal-footer
-      button#tagDownload.btn.btn-primary Download
-  .modal.hide.fade#tagManager
-    .modal-header
-      button.close(data-dismiss="modal") x
-      h3 Add tag
-    .modal-body
-      .container-fluid
-        .row-fluid
-          .span12
-            form#tagForm.form-inline.modal-form
-              fieldset
-                p
-                  label Choose Tag
-                select.tagSelector
-                button.tagRemove.btn-small Remove Tag
-                p - or -
-              fieldset
-                label Add New Tag
-                input.newTag(type='text')
-                button.newTagSubmit.btn-small Add
+      button#tagDownload.btn.btn-primary(ng-click="download(downloadTarget, selectedTag)") Download
   .modal.hide.fade#changePass
     .modal-header
       button.close(data-dismiss="modal") x
