@@ -1,0 +1,169 @@
+!!!
+html
+  head
+    title ntor
+    link(rel='stylesheet', href='css/bootstrap.css')
+    link(rel='stylesheet', href='css/custom.css')
+    link(rel='stylesheet', href='css/bootstrap-responsive.css')
+    script(src='js/jquery-1.7.min.js')
+    script(src='js/bootstrap.min.js')
+    script(src='js/jquery.dataTables.min.js')
+    script(src='js/dt_bootstrap2.js')
+    script(src='js/bootstrap-modal.js')
+    script(src='js/bootstrap-alert.js')
+    script(src='js/main.js')
+  body
+    .navbar.navbar-fixed-top
+      .navbar-inner
+        .container-fluid
+          a.btn.btn-navbar(data-toggle="collapse", data-target=".nav-collapse")
+            span.icon-bar
+            span.icon-bar
+            span.icon-bar
+          a.brand ntor
+          .nav-collapse
+            ul.nav
+              li
+                a(href='/incoming') Download Files
+              li.active
+                a(href='#tabMain', data-toggle='tab') Main
+              li
+                a(href='#tabSearch', data-toggle='tab') Search
+            ul.nav.pull-right
+              li.dropdown
+                a.dropdown-toggle(data-toggle='dropdown', href='#') Tools
+                  b.caret
+                ul.dropdown-menu
+                  li
+                    a.manageTags(href='#tagManager') Manage Tags
+                  li
+                    a.changePass(href='#changePass') Change Password
+                  li
+                    a.manageUsers(href='#manageUsers') User Management
+            ul.diskInfo.nav.pull-right
+    .container-fluid
+      .tab-content
+        .tab-pane.active#tabMain
+          .row-fluid
+            .span12
+              table#torrentList.table.table-striped.table-bordered.dTable
+                thead
+                  tr
+                    th Controls
+                    th Status
+                    th Torrent Name
+                    th.hidden Hash
+                    th.hidden Creation Date
+                tbody
+                  tr
+                    td Loading
+                    td Loading
+                    td Loading
+                    td.hidden Loading
+                    td.hidden Loading
+        .tab-pane#tabSearch
+          .row-fluid
+            .span6
+              form.well.form-search#searchForm
+                input.input-medium.search-query(type='text')
+                button.btn(type='submit') Search
+                select
+                  - each engine in searchEngines
+                    option
+                      = engine
+          .row-fluid.searchResultsContainer
+            .span12
+              table#searchResults.table.table-striped.table-bordered.dTable
+                thead
+                  tr
+                    th
+                    th Name
+                    th.hidden url
+                    th.hidden engine
+                tbody
+                  tr
+                    td 
+                    td 
+                    td.hidden 
+                    td.hidden 
+  .modal.hide.fade#tagModal
+    .modal-header
+      button.close(data-dismiss="modal") x
+      h3 Add tag
+    .modal-body
+      form#tagForm.form-inline.modal-form
+        fieldset
+          p
+            label Choose Tag
+          select#downloadTag.tagSelector
+          button.tagRemove.btn-small Remove Tag
+          p - or -
+        fieldset
+          label Add New Tag
+          input#downloadNewTag.newTag(type='text')
+          button.newTagSubmit.btn-small Add
+    .modal-footer
+      button#tagDownload.btn.btn-primary Download
+  .modal.hide.fade#tagManager
+    .modal-header
+      button.close(data-dismiss="modal") x
+      h3 Add tag
+    .modal-body
+      .container-fluid
+        .row-fluid
+          .span12
+            form#tagForm.form-inline.modal-form
+              fieldset
+                p
+                  label Choose Tag
+                select.tagSelector
+                button.tagRemove.btn-small Remove Tag
+                p - or -
+              fieldset
+                label Add New Tag
+                input.newTag(type='text')
+                button.newTagSubmit.btn-small Add
+  .modal.hide.fade#changePass
+    .modal-header
+      button.close(data-dismiss="modal") x
+      h3 Change Password
+    .modal-body
+      .container-fluid
+        .row-fluid
+          .span12
+            form#changePassForm.modal-form
+              label Old Password
+              input.oldPass(type='password')
+              label New Password
+              input.newPass(type='password')
+              button.changePassSubmit Submit
+  .modal.hide.fade#manageUsers
+    .modal-header
+      button.close(data-dismiss="modal") x
+      h3 User Management
+    .modal-body
+      .container-fluid
+        .row-fluid
+          .span12
+            h3 Add user
+            form#addUserForm.modal-form
+              label Email Address
+              input.email(type='text')
+              label Password
+              input.password(type='password')
+              label Level
+              input.level(type='number')
+              button.addUserSubmit Submit
+        .row-fluid
+          .span12
+            h3 User List
+            table#userTable
+              thead
+                th User
+                th Level
+                th Delete
+              tbody
+  .modal.hide#loadingModal
+    .modal-body
+      img(src='/img/pacman.gif', alt='Loading...')
+      | Loading...
