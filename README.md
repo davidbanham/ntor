@@ -48,6 +48,10 @@ Log in with the username admin@example.com and the password admin. Set up a new 
 
 Add some search and feed plugins. Just clone them into plugins/search and plugins/feeds and run npm install. There are two to get you started here:
 
+https://github.com/davidbanham/ntor-search-linuxtracker
+
+https://github.com/davidbanham/ntor-feeds-gameupdates
+
 Download some torrents and invite some friends. Have fun! ntor is designed to get out of your way as much as possible. Poke around the interface and it should all make sense.
 
 Goodies:
