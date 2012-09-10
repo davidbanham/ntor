@@ -1,0 +1,6 @@
+node_modules
+plugins/
+torrentBin/*
+data/*
+config/conf.js
+public/incoming

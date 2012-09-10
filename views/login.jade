@@ -1,0 +1,23 @@
+!!!
+html
+  head
+    title ntor
+    link(rel='stylesheet', href='css/bootstrap.css')
+    link(rel='stylesheet', href='css/custom.css')
+    link(rel='stylesheet', href='css/bootstrap-responsive.css')
+    script(src='js/jquery-1.7.min.js')
+    script(src='js/bootstrap.min.js')
+    script(src='js/dt_bootstrap2.js')
+  body
+    .container-fluid
+      .row-fluid
+        .span4
+          p
+        .span4
+          form.well(method='post')
+            label Email Address
+            input.input-medium(type='text', name='username')
+            label Password
+            input.input-medium(type='password', name='password')
+            button.btn(type='submit') Submit
+

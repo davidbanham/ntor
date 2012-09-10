@@ -1,0 +1,42 @@
+!!! HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN
+html
+  head
+    title Index of /#{dirname}
+  body
+    h1 Index of /#{dirname}
+    table
+      tr
+        th
+          img(src="/icons/blank.gif", alt="[ICO]")
+        th
+          a(href="") Name
+        th
+          a(href="") Last Modified
+        th
+          a(href="") Size
+        th
+          a(href="") Description
+      tr
+        th(colspan="5")
+          hr
+      tr
+        td(valign="top")
+          img(src="/icons/back.gif", alt="[DIR]")
+        td
+          a(href="..") Parent Directory
+        td &nbsp;
+        td(align="right") -
+        td &nbsp;
+      - each file in files
+        tr
+          td
+            img(src="/icons/#{file.iconType}.gif", alt=file.altTag)
+          td
+            a(href='#{file.name}') #{file.name}
+          td(align="right") 01-Jan-1970 00:00  
+          td(align="right") #{file.fileSize}
+          td &nbsp;
+      tr
+        th(colspan="5")
+          hr
+    address Faked Apache Server
