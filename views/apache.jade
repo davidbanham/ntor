@@ -32,7 +32,7 @@ html
           td
             img(src="/icons/#{file.iconType}.gif", alt=file.altTag)
           td
-            a(href='#{file.name}') #{file.name}
+            a(href='#{encodeURI(file.name)}') #{file.name}
           td(align="right") 01-Jan-1970 00:00  
           td(align="right") #{file.fileSize}
           td &nbsp;
