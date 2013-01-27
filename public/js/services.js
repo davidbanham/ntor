@@ -48,9 +48,7 @@ angular.module('socketService', []).
 		return{
 			on: function(eventName, callback) {
 				Socket.on(eventName, function(data) {
-					console.log("data is ", data);
 					var args = arguments;
-					console.log ("args is", args);
 					$rootScope.$apply(function() {
 						callback.apply(Socket, args);
 					});
