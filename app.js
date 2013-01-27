@@ -557,8 +557,9 @@ app.get('/search/:engine', requiresLevel(0), function(req,res) {
 
 var getInfoHash = function(filePath, callback) {
 	nt.read(filePath, function(err, torrent) {
+		console.log(torrent);
 		if(err) console.error('getInfoHash error'+err);
-		else callback(nt.getInfoHash(torrent));
+		else callback(torrent.infoHash());
 	});
 };
 
