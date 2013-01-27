@@ -21,7 +21,7 @@ angular.module('SharedServices', [])
     })
 angular.module('torrentsService', ['ngResource', 'SharedServices']).
 	factory('Torrent', function($resource){
-	return $resource('torrent/:action/:hash', {action: "@action", hash: "@hash"}, {
+	return $resource('torrent/:action/:hash', {}, {
 		query: {method: 'GET', params: {action: 'all'}, isArray: true}
 		, action: {method: 'POST'}
 		, post: {method: 'POST'}
@@ -39,7 +39,7 @@ angular.module('searchService', ['ngResource', 'SharedServices']).
 
 angular.module('tagService', ['ngResource', 'SharedServices']).
 	factory('Tag', function($resource){
-	return $resource('tag/:action/', {action: "@action", tag: "@tag"}, {
+	return $resource('tag/:action/', {}, {
 	})
 })
 angular.module('feedService', ['ngResource', 'SharedServices']).
