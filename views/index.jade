@@ -47,7 +47,7 @@ html
                   li
                     a.manageTags(ng-click="openTagManager()") Manage Tags
                   li
-                    a.changePass(href='#changePass') Change Password
+                    a.changePass(ng-click="openChangePassword()") Change Password
                   li
                     a.manageUsers(href='#manageUsers') User Management
             ul.diskInfo.nav.pull-right(ng-controller="DiskSpaceCtrl")
@@ -137,20 +137,6 @@ html
                   option 7
                   option 30
                 button.newFeedTarget.btn-small(ng-click="addTarget(newTarget)") Add
-  .modal.hide.fade#changePass
-    .modal-header
-      button.close(data-dismiss="modal") x
-      h3 Change Password
-    .modal-body
-      .container-fluid
-        .row-fluid
-          .span12
-            form#changePassForm.modal-form
-              label Old Password
-              input.oldPass(type='password')
-              label New Password
-              input.newPass(type='password')
-              button.changePassSubmit Submit
   .modal.hide.fade#manageUsers
     .modal-header
       button.close(data-dismiss="modal") x

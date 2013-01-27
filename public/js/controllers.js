@@ -107,6 +107,13 @@ function FeedCtrl($scope, Feed, Tag) {
 	};
 }
 function UtilityCtrl($scope, $dialog, Tag) {
+	$scope.openChangePassword = function() {
+		var opts = {
+			templateUrl: 'partial/changePassword'
+			, controller: 'ChangePasswordCtrl'
+		}
+		$dialog.dialog(opts).open()
+	}
 	$scope.openTagManager = function() {
 		var opts = {
 			backdrop: true
@@ -138,7 +145,23 @@ function TagCtrl($scope, dialog, Tag){
 		dialog.close(tag);
 	};
 };
-
+function ChangePasswordCtrl($scope, $http, dialog) {
+	$scope.close = function() {
+		dialog.close();
+	};
+	$scope.changePass = function() {
+		$http.post('/changePass', {oldPassword: $scope.oldPassword, newPassword: $scope.newPassword})
+		.success(
+			function(data) {
+				$scope.status = data;
+			}
+		).error(
+			function(data) {
+				$scope.status = data;
+			}
+		);
+	}
+}
 function SearchCtrl($scope, $dialog, Search, Tag) {
 	$scope.search = function(engine, expression, marker) {
 		Search.search({engine: engine, marker: marker, expression: expression}, function(res) {
