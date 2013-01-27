@@ -73,6 +73,39 @@ function DiskSpaceCtrl($scope, Socket) {
 		$scope.diskSpace = data;
 	});
 }
+function FeedCtrl($scope, Feed, Tag) {
+	$scope.feedTargets = Feed.query({action: 'target'});
+	$scope.tags = Tag.query({action: 'all'});
+	$scope.changeNotification = function(target) {
+		console.log(target.notifyMe);
+	}
+	$scope.addTarget = function(newTarget) {
+		newTarget.frequency = parseInt(newTarget.frequency) * 24 * 60 * 60 * 1000;
+		Feed.save({action: 'target'}, newTarget, function(res) {
+			$scope.feedTargets = Feed.query({action: 'target'});
+		});
+	}
+	$scope.removeTarget = function(target) {
+		Feed.remove({action: 'target', id: target.id}, function(res) {
+			$scope.feedTargets = Feed.query({action: 'target'});
+		});
+	};
+	$scope.toDate = function(ms) {
+		if (ms < 5) return "Never";
+		return new Date(ms).toDateString();
+	};
+	$scope.createDurationString = function(ms) {
+		var x = ms / 1000
+		seconds = x % 60
+		x /= 60
+		minutes = x % 60
+		x /= 60
+		hours = x % 24
+		x /= 24
+		days = x
+		return days+' days, '+hours+' hours, '+minutes+' minutes, '+seconds+' seconds'
+	};
+}
 function UtilityCtrl($scope, $dialog, Tag) {
 	$scope.openTagManager = function() {
 		var opts = {

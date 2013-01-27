@@ -42,6 +42,11 @@ angular.module('tagService', ['ngResource', 'SharedServices']).
 	return $resource('tag/:action/', {action: "@action", tag: "@tag"}, {
 	})
 })
+angular.module('feedService', ['ngResource', 'SharedServices']).
+	factory('Feed', function($resource){
+	return $resource('feed/:action/:id', {}, {
+	})
+})
 angular.module('socketService', []).
 	factory('Socket', function($rootScope) {
 		var Socket = io.connect();

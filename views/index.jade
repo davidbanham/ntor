@@ -95,7 +95,7 @@ html
                     td {{result.name}}
             .span1.pagPrev(ng-click="search(engine, expression, pagination.prev)")
             .span11.pagNext(ng-click="search(engine, expression, pagination.next)")
-        .tab-pane#tabAuto
+        .tab-pane#tabAuto(ng-controller="FeedCtrl")
           .row-fluid
             .span12
               table#autoList.table.table-striped.table-bordered.dTable
@@ -108,53 +108,35 @@ html
                     th Tag
                     th Last Hit
                     th Frequency
-                    th.hidden Id
                 tbody
-                  tr
-                    td
-                    td
-                    td
-                    td
-                    td
-                    td
-                    td
-                    td.hidden
+                  tr(ng-repeat="target in feedTargets")
+                    td 
+                      .btn-group
+                        btn.btn-danger(ng-click="removeTarget(target)") Remove
+                    td {{target.yes}}
+                    td {{target.no}}
+                    td 
+                      input(type='checkbox',ng-click="changeNotification(target)", ng-model="target.notifyMe")
+                    td {{target.tag.elements.join('/')}}
+                    td {{toDate(target.lastHit)}}
+                    td {{createDurationString(target.frequency)}}
           .row-fluid
             .span12
               form.form-inline.well
                 label Yes
-                input.yes(type='text', name='yes')
+                input.yes(type='text', name='yes', ng-model="newTarget.yes")
                 label No
-                input.no(type='text', name='no')
+                input.no(type='text', name='no', ng-model="newTarget.no")
                 label Notify
-                input.notify(type='checkbox', name='notify')
+                input.notify(type='checkbox', name='notify', ng-model="newTarget.notify")
                 label Tag
-                select.tag.tagSelector(name='tag')
+                select.tag.tagSelector(name='tag', ng-model="newTarget.tag", ng-options="tag.elements.join('/') for tag in tags")
                 label Days
-                select.frequency(name='frequency')
+                select.frequency(name='frequency', ng-model="newTarget.frequency")
                   option 1
                   option 7
                   option 30
-                button.newFeedTarget.btn-small Add
-  .modal.hide.fade#tagModal(ng-controller="SearchCtrl")
-    .modal-header
-      button.close(data-dismiss="modal") x
-      h3 Add tag
-    .modal-body
-      form#tagForm.form-inline.modal-form
-        fieldset
-          p
-            label Choose Tag
-          select#downloadTag.tagSelector(ng-model="selectedTag")
-            option(ng-repeat="tag in tags")
-              button.tagRemove.btn-small(ng-click="Tag.post({action: remove, tag: selectedTag})") Remove Tag
-          p - or -
-        fieldset
-          label Add New Tag
-          input#downloadNewTag.newTag(type='text', ng-model="newTagText")
-            button.newTagSubmit.btn-small(ng-click="Tag.post({action: add, tag: newTagText})") Add
-    .modal-footer
-      button#tagDownload.btn.btn-primary(ng-click="download(downloadTarget, selectedTag)") Download
+                button.newFeedTarget.btn-small(ng-click="addTarget(newTarget)") Add
   .modal.hide.fade#changePass
     .modal-header
       button.close(data-dismiss="modal") x

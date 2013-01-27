@@ -336,7 +336,7 @@ app.get('/streamFile/', requiresLevel(0), function(req,res) {
 	});
 });
 
-app.get('/feedTargets', requiresLevel(0), function(req,res) {
+app.get('/feed/target', requiresLevel(0), function(req,res) {
 	var feedItems = [];
 	for ( var i = 0 ; i < feedTargets.length ; i ++ ) {
 		var item = {
@@ -357,13 +357,13 @@ app.get('/feedTargets', requiresLevel(0), function(req,res) {
 	res.send(feedItems);
 });
 
-app.post('/newFeedTarget', requiresLevel(0), function(req,res) {
+app.post('/feed/target', requiresLevel(0), function(req,res) {
 	var maxId = 0;
 	for (var i = 0 ; i < feedTargets.length ; i++ ) {
 		if ( feedTargets[i].id > maxId ) maxId = feedTargets[i].id;
 	}
 	var notificationList = [];
-	if (req.body.notify === 'true') notificationList.push(req.session.user.email);
+	if (req.body.notify === true) notificationList.push(req.session.user.email);
 	var newTarget = {
 		yes: req.body.yes
 		, no: req.body.no
@@ -378,9 +378,9 @@ app.post('/newFeedTarget', requiresLevel(0), function(req,res) {
 	res.send('success');
 });
 
-app.post('/deleteFeedTarget', requiresLevel(0), function(req,res) {
+app.del('/feed/target/:id', requiresLevel(0), function(req,res) {
 	var filteredTargets = feedTargets.filter(function(x) {
-		return ( x.id != req.body.targetId );
+		return ( x.id != req.params.id );
 	});
 	feedTargets = filteredTargets;
 	fs.writeFileSync('data/feedTargets.json', JSON.stringify(filteredTargets));
@@ -677,10 +677,6 @@ app.post('/tag/remove', requiresLevel(0), function(req,res) {
 });
 
 app.post('/tag/add', requiresLevel(0), function(req,res) {
-	console.log(req.body)
-	console.log(req.body.tag);
-	console.log(typeof req.body.tag);
-	console.log(req.body.tag instanceof Array);
 	tags.push(req.body.tag);
 	fs.writeFileSync('data/tags.json', JSON.stringify(tags));
 	res.send({success: true});
