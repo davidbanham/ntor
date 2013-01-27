@@ -34,11 +34,14 @@ Install nginx. ( sudo apt-get install nginx ) or similar
 
 Include conf/ntor.nginx in your configuration. On Ubuntu, just place the file in /etc/nginx/sites-enabled
 
-Edit the redirect in conf/ntor.nginx from ntor.example.com to whatever your domain is.
-
 Create a htpasswd file to protect your rtorrent SCGI port. On Ubuntu:
 	htpasswd -c -d /etc/nginx/htpasswd rtorrent
 Then enter the password when prompted.
+
+Redirect port 443 (https) to port 3000. On Ubuntu, I do this via iptables with the following command:
+
+sudo iptables -t nat -A PREROUTING -p tcp -m tcp --dport 443 -j REDIRECT --to-ports 3000
+sudo iptables-save
 
 Copy conf/example.conf.js to conf/conf.js
 
@@ -66,6 +69,4 @@ What next?
 
 ntor is designed to make it easy to add search workers for arbitrary trackers. I like interfaces like rutorrent, but was frustrated with how difficult it was to add new sites to the search. In ntor, each search engine or feed worker is implemented as a nodejs module. This means that whatever search your site uses, you can write an ntor plugin to handle it. Many sites don't expose a nice API, but node makes it easy to parse arbitrary HTML pages with jsdom and jquery. All kinds of authentication methods, cookies, etc can easily be handled with request. Take a look at the example plugins above to get started writing your own.
 
-The main TODO is to redo the frontend code in something like Angular. At the moment it's a rats nest of event handlers.
-
-Also, the routes in the app.js file could really use some logical organisation.
+If you're keen to help out, take a look at the Issues page.
