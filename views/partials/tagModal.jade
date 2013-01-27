@@ -13,9 +13,12 @@
               button.tagRemove.btn.btn-small(ng-click="removeTag(selectedTag)") Remove Tag
               p - or -
             fieldset
-              label Add New Tag
+              p
+                label Add New Tag
               input.newTag(type='text', ng-model="newTag", ng-change="selectedTag=''")
               button.newTagSubmit.btn.btn-small(ng-click="addTag({elements: newTag.split('/')})") Add
             fieldset
               .span11
-                button.btn.btn-small(ng-click="close(newTag || selectedTag)") Close
+                span
+              .span1
+                button.btn.btn-small(ng-click="close(newTag || selectedTag)") Done
