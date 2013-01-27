@@ -22,6 +22,7 @@ var express = require('express')
 , pollerError = { error: true, details: "Not yet initialised" }
 , polledTorrents = false
 , downloadDir = ''
+, freeDiskSpace = []
 , mungedDirectory = require('./lib/middleware/directory.js')
 , tags = JSON.parse(fs.readFileSync('data/tags.json'))
 , users = JSON.parse(fs.readFileSync('data/users.json'))
@@ -59,6 +60,18 @@ io.set('authorization', function (data, cb) {
 		return cb(null, false);
 	});
 });
+io.sockets.on('connection', function(socket) {
+	socket.emit('diskSpace', freeDiskSpace);
+});
+
+setInterval(function() {
+	diskSpace(function(space) {
+		if (mergify.onlyChanges(freeDiskSpace, space) !== null) {
+			freeDiskSpace = space;
+			io.sockets.emit('diskSpace', space);
+		}
+	});
+}, 10 * 1000);
 
 var sessionMunger = function(req,res,next) {
 	if ( typeof req.query.sessu !== 'undefined' ) {
@@ -525,23 +538,21 @@ app.get('/listUsers', requiresLevel(50), function(req,res) {
 	res.send(JSON.stringify(userList));
 });
 
-app.get('/freeDiskSpace', requiresLevel(0), function(req,res) {
-	child.exec('stat -f / -c %f_%s', function(err,data) {
-		var arr = data.split('_');
-		var free = parseInt(arr[0]);
-		var block = parseInt(arr[1]);
-		var sizeString = bytesToSize(free * block);
-		res.send([sizeString]);
+var diskSpace = function(cb) {
+	rt.getFreeDiskSpace(function(err,uniques,data) {
+		var sizes = Object.keys(uniques);
+		var sizeStrings = [];
+		for ( var i = 0 ; i < sizes.length ; i++ ) {
+			sizeStrings.push(bytesToSize(sizes[i]));
+		}
+		cb(sizeStrings);
 	});
-	// NFI why this isn't working right
-	//	rt.getFreeDiskSpace(function(err,uniques,data) {
-	//		var sizes = Object.keys(uniques);
-	//		var sizeStrings = [];
-	//		for ( var i = 0 ; i < sizes.length ; i++ ) {
-	//			sizeStrings.push(bytesToSize(sizes[i]));
-	//		}
-	//		res.send(sizeStrings);
-	//	});
+};
+
+app.get('/freeDiskSpace', requiresLevel(0), function(req,res) {
+	diskSpace(function(space) {
+		res.send(space);
+	});
 });
 
 app.get('/search/:engine', requiresLevel(0), function(req,res) {

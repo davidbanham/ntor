@@ -68,6 +68,11 @@ function TorrentListCtrl($scope, Torrent, Socket) {
 		}
 	};
 }
+function DiskSpaceCtrl($scope, Socket) {
+	Socket.on('diskSpace', function(data) {
+		$scope.diskSpace = data;
+	});
+}
 function UtilityCtrl($scope, $dialog, Tag) {
 	$scope.openTagManager = function() {
 		var opts = {

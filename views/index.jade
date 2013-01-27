@@ -50,7 +50,9 @@ html
                     a.changePass(href='#changePass') Change Password
                   li
                     a.manageUsers(href='#manageUsers') User Management
-            ul.diskInfo.nav.pull-right
+            ul.diskInfo.nav.pull-right(ng-controller="DiskSpaceCtrl")
+              li
+                a Free space: {{diskSpace}}
     .container-fluid
       .tab-content
         .tab-pane.active#tabMain(ng-controller="TorrentListCtrl")
