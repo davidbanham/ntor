@@ -52,6 +52,13 @@ var app = module.exports = express.createServer({
 });
 var io = socketio.listen(app);
 io.set('log level', 1);
+io.set('authorization', function (data, cb) {
+	store.get(data.headers.cookie.split('=')[1], function(err, sess) {
+		if (err) return cb(err);
+		if (sess) return cb(null, true);
+		return cb(null, false);
+	});
+});
 
 var sessionMunger = function(req,res,next) {
 	if ( typeof req.query.sessu !== 'undefined' ) {
