@@ -13,7 +13,9 @@
     "jsDAV": "*",
     "findit": "*",
     "node-native-zip": "*",
-    "socket.io": "~0.9.13"
+    "socket.io": "~0.9.13",
+    "cookie": "0.0.5",
+    "connect": "~2.7.2"
   },
   "readmeFilename": "README.md",
   "gitHead": "a85e84b0a28b43d55e4076330ce354e362eb924f",

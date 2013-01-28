@@ -8,6 +8,8 @@ var express = require('express')
 , fs = require('fs')
 , nt = require('nt')
 , crypto = require('crypto')
+, cookie = require('cookie')
+, connect = require('connect')
 , child = require('child_process')
 , spawn = require('child_process').spawn
 , nodemailer = require('nodemailer')
@@ -53,11 +55,12 @@ var server = https.createServer({key: fs.readFileSync('./server.key'), cert: fs.
 var io = socketio.listen(server);
 io.set('log level', 1);
 io.set('authorization', function (data, cb) {
-	store.get(data.headers.cookie.split('=')[1], function(err, sess) {
-		if (err) return cb(err);
-		if (sess) return cb(null, true);
-		return cb(null, false);
-	});
+	var cook = cookie.parse(data.headers.cookie);
+	var sessionID = connect.utils.parseSignedCookie(cook['ntor.sid'], conf.general.cookieSecret);
+	if (cook['ntor.sid'] == sessionID) {
+		return cb('Invalid cookie', false)
+	}
+	return cb(null, true);
 });
 io.sockets.on('connection', function(socket) {
 	socket.emit('diskSpace', freeDiskSpace);
@@ -88,7 +91,7 @@ var torrentChanges = function(torrents) {
 
 app.configure(function(){
 	app.set('views', __dirname + '/views');
-	app.set("port", process.env.PORT || 3000);
+	app.set('port', process.env.PORT || 3000);
 	app.set('view engine', 'jade');
 	app.set('view options', { layout: false, pretty: true });
 	app.use(express.bodyParser());
