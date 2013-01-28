@@ -21,7 +21,7 @@ angular.module('SharedServices', [])
     })
 angular.module('torrentsService', ['ngResource', 'SharedServices']).
 	factory('Torrent', function($resource){
-	return $resource('torrent/:action/:hash', {}, {
+	return $resource('torrent/:action/:hash', {action: '@action', hash: '@hash'}, {
 		query: {method: 'GET', params: {action: 'all'}, isArray: true}
 		, action: {method: 'POST'}
 		, post: {method: 'POST'}
