@@ -133,8 +133,25 @@ function UtilityCtrl($scope, $dialog, Tag) {
 		d.open()
 	};
 };
-function TagCtrl($scope, dialog, Tag){
-	$scope.tags = Tag.query({action: 'all'});
+function TagCtrl($scope, dialog, Tag, levenshteinDistanceService){
+	$scope.tags = Tag.query({action: 'all'}, function(tags) {
+		var target = levenshteinDistanceService.getTarget();
+		if (target == '') return $scope.best = null;
+		var best = {
+			tag: null
+			, dist: null
+		}
+		for ( var i = 0 ; i < tags.length ; i++ ) {
+			dist = levenshteinDistanceService.calc(tags[i].elements.join('/'), target);
+			if (best.dist === null || dist < best.dist) {
+				best = {
+					tag: tags[i]
+					, dist: dist
+				}
+			}
+		};
+		$scope.selectedTag = best.tag;
+	});
 	$scope.removeTag = function(tag) {
 		Tag.save({action: 'remove', tag: tag}, function(res) {
 			console.log(res);
@@ -186,7 +203,7 @@ function ChangePasswordCtrl($scope, $http, dialog) {
 		);
 	}
 }
-function SearchCtrl($scope, $dialog, Search, Tag) {
+function SearchCtrl($scope, $dialog, Search, Tag, levenshteinDistanceService) {
 	$scope.engines = Search.query({engine: 'all'}, function(){
 		$scope.engine = $scope.engines[0];
 	});
@@ -197,6 +214,7 @@ function SearchCtrl($scope, $dialog, Search, Tag) {
 		});
 	}
 	$scope.chooseTag = function(result) {
+		levenshteinDistanceService.setTarget(result.name);
 		var opts = {
 			backdrop: true
 			, keyboard: true
