@@ -43,7 +43,6 @@ function TorrentListCtrl($scope, Torrent, Socket) {
 		$scope.torrents = torrents;
 	}
 	Socket.on('torrentChange', function (data) {
-		//deepMerge($scope.torrents, data);
 		mungeTorrents(data);
 	});
 	$scope.remote = function(button, torrent) {

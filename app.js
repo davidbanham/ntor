@@ -54,6 +54,9 @@ var app = module.exports = express();
 var server = https.createServer({key: fs.readFileSync('./server.key'), cert: fs.readFileSync('./server.crt')},app)
 var io = socketio.listen(server);
 io.set('log level', 1);
+io.enable('browser client minification');  // send minified client
+io.enable('browser client etag');          // apply etag caching logic based on version number
+io.enable('browser client gzip');          // gzip the file
 io.set('authorization', function (data, cb) {
 	var cook = cookie.parse(data.headers.cookie);
 	var sessionID = connect.utils.parseSignedCookie(cook['ntor.sid'], conf.general.cookieSecret);
