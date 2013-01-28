@@ -188,8 +188,11 @@ function ChangePasswordCtrl($scope, $http, dialog) {
 	}
 }
 function SearchCtrl($scope, $dialog, Search, Tag) {
+	$scope.engines = Search.query({engine: 'all'}, function(){
+		$scope.engine = $scope.engines[0];
+	});
 	$scope.search = function(engine, expression, marker) {
-		Search.search({engine: engine, marker: marker, expression: expression}, function(res) {
+		Search.search({engine: engine.name, marker: marker, expression: expression}, function(res) {
 			$scope.results = res.results;
 			$scope.pagination = res.pagination;
 		});
@@ -205,7 +208,7 @@ function SearchCtrl($scope, $dialog, Search, Tag) {
 		};
 		var d = $dialog.dialog(opts)
 		d.open().then(function(tag){
-			Search.save({engine: $scope.engine}, {target: result.name, url: result.url, tag: tag, }, function(res) {
+			Search.save({engine: $scope.engine.name}, {target: result.name, url: result.url, tag: tag, }, function(res) {
 				console.log(res);
 			});
 		});

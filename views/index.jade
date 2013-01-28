@@ -77,9 +77,7 @@ html
               form.well.form-search#searchForm
                 input.input-medium.search-query(type='text', ng-model="expression")
                 button.btn(type='submit', ng-click="search(engine, expression)") Search
-                select(ng-model="engine")
-                  - each engine in searchEngines
-                    option= engine
+                select(ng-model="engine", ng-options="engine.name for engine in engines")
           .row-fluid.searchResultsContainer
             .span12
               table#searchResults.table.table-striped.table-bordered

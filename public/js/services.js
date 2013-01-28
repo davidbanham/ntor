@@ -33,7 +33,6 @@ angular.module('searchService', ['ngResource', 'SharedServices']).
 	factory('Search', function($resource){
 	return $resource('search/:engine', {engine: "@engine"}, {
 		search: {method: 'GET'}
-		, download: {method: 'POST'}
 	});
 });
 

@@ -253,9 +253,7 @@ app.get('/incoming/*', requiresLevel(0), function(req,res,next) {
 });
 
 app.get('/', requiresLevel(0), function(req,res) {
-	res.render('index', {
-		searchEngines: searchEngines
-	});
+	res.render('index');
 });
 
 app.get('/login', function(req,res) {
@@ -553,6 +551,14 @@ app.get('/freeDiskSpace', requiresLevel(0), function(req,res) {
 	diskSpace(function(space) {
 		res.send(space);
 	});
+});
+
+app.get('/search/all', requiresLevel(0), function(req,res) {
+	var engines = [];
+	for (var i = 0 ; i < searchEngines.length ; i++) {
+		engines.push({name: searchEngines[i]});
+	}
+	res.send(engines);
 });
 
 app.get('/search/:engine', requiresLevel(0), function(req,res) {
