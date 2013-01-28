@@ -28,7 +28,6 @@ html
             span.icon-bar
             span.icon-bar
           a.brand ntor
-            img#loading(src="img/pacman_yellow.gif", alt="Loading...")
           .nav-collapse
             ul.nav
               li
@@ -137,7 +136,7 @@ html
                   option 7
                   option 30
                 button.newFeedTarget.btn-small(ng-click="addTarget(newTarget)") Add
-  .modal.hide#loadingModal
+  .modal#loading
     .modal-body
       img(src='/img/pacman.gif', alt='Loading...')
       | Loading...
