@@ -604,6 +604,7 @@ var createFullPath = function(filePath, callback) {
 };
 
 app.post('/search/:engine', requiresLevel(0), function(req,res) {
+	if (typeof req.body.tag == 'undefined') return res.send('Tag required', 400);
 	var fileName = req.body.target;
 	var relativePath = 'torrentBin/'+fileName+'.torrent';
 	try{
