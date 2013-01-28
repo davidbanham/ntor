@@ -133,17 +133,17 @@ function UtilityCtrl($scope, $dialog, Tag) {
 		d.open()
 	};
 };
-function TagCtrl($scope, dialog, Tag, levenshteinDistanceService){
+function TagCtrl($scope, dialog, Tag, stringSimilarityService){
 	$scope.tags = Tag.query({action: 'all'}, function(tags) {
-		var target = levenshteinDistanceService.getTarget();
+		var target = stringSimilarityService.getTarget();
 		if (target == '') return $scope.best = null;
 		var best = {
 			tag: null
 			, dist: null
 		}
 		for ( var i = 0 ; i < tags.length ; i++ ) {
-			dist = levenshteinDistanceService.calc(tags[i].elements.join('/'), target);
-			if (best.dist === null || dist < best.dist) {
+			dist = stringSimilarityService.calc(tags[i].elements.join('/'), target);
+			if (best.dist === null || dist > best.dist) {
 				best = {
 					tag: tags[i]
 					, dist: dist
@@ -203,7 +203,7 @@ function ChangePasswordCtrl($scope, $http, dialog) {
 		);
 	}
 }
-function SearchCtrl($scope, $dialog, Search, Tag, levenshteinDistanceService) {
+function SearchCtrl($scope, $dialog, Search, Tag, stringSimilarityService) {
 	$scope.engines = Search.query({engine: 'all'}, function(){
 		$scope.engine = $scope.engines[0];
 	});
@@ -214,7 +214,7 @@ function SearchCtrl($scope, $dialog, Search, Tag, levenshteinDistanceService) {
 		});
 	}
 	$scope.chooseTag = function(result) {
-		levenshteinDistanceService.setTarget(result.name);
+		stringSimilarityService.setTarget(result.name);
 		var opts = {
 			backdrop: true
 			, keyboard: true

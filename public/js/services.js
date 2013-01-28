@@ -35,8 +35,8 @@ angular.module('searchService', ['ngResource', 'SharedServices']).
 		search: {method: 'GET'}
 	});
 });
-angular.module('levenshtein', []).
-	service('levenshteinDistanceService', function() {
+angular.module('stringSimilarity', []).
+	service('stringSimilarityService', function() {
 	return {
 		target: '',
 		setTarget: function(target) {
@@ -45,38 +45,35 @@ angular.module('levenshtein', []).
 		getTarget: function() {
 			return this.target;
 		},
-		calc: function(a, b){
-			if(a.length == 0) return b.length; 
-			if(b.length == 0) return a.length; 
-
-			var matrix = [];
-
-			// increment along the first column of each row
-			var i;
-			for(i = 0; i <= b.length; i++){
-				matrix[i] = [i];
+		calc: function lcs(string1, string2) {
+			// init max value
+			var longestCommonSubstring = 0;
+			// init 2D array with 0
+			var table = Array(string1.length);
+			for(a = 0; a <= string1.length; a++){
+				table[a] = Array(string2.length);
+				for(b = 0; b <= string2.length; b++){
+					table[a][b] = 0;
+				}
 			}
-
-			// increment each column in the first row
-			var j;
-			for(j = 0; j <= a.length; j++){
-				matrix[0][j] = j;
-			}
-
-			// Fill in the rest of the matrix
-			for(i = 1; i <= b.length; i++){
-				for(j = 1; j <= a.length; j++){
-					if(b.charAt(i-1) == a.charAt(j-1)){
-						matrix[i][j] = matrix[i-1][j-1];
+			// fill table
+			for(var i = 0; i < string1.length; i++){
+				for(var j = 0; j < string2.length; j++){
+					if(string1[i]==string2[j]){
+						if(table[i][j] == 0){
+							table[i+1][j+1] = 1;
+						} else {
+							table[i+1][j+1] = table[i][j] + 1;
+						}
+						if(table[i+1][j+1] > longestCommonSubstring){
+							longestCommonSubstring = table[i+1][j+1];
+						}
 					} else {
-						matrix[i][j] = Math.min(matrix[i-1][j-1] + 1, // substitution
-													 Math.min(matrix[i][j-1] + 1, // insertion
-													 matrix[i-1][j] + 1)); // deletion
+						table[i+1][j+1] = 0;
 					}
 				}
 			}
-
-			return matrix[b.length][a.length];
+			return longestCommonSubstring;
 		}
 	}
 });
