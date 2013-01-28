@@ -45,11 +45,11 @@ html
                   b.caret
                 ul.dropdown-menu(ng-controller="UtilityCtrl")
                   li
-                    a.manageTags(ng-click="openTagManager()") Manage Tags
+                    a(ng-click="openTagManager()") Manage Tags
                   li
-                    a.changePass(ng-click="openChangePassword()") Change Password
+                    a(ng-click="openChangePassword()") Change Password
                   li
-                    a.manageUsers(href='#manageUsers') User Management
+                    a(ng-click="openManageUsers()") User Management
             ul.diskInfo.nav.pull-right(ng-controller="DiskSpaceCtrl")
               li
                 a Free space: 
@@ -137,32 +137,6 @@ html
                   option 7
                   option 30
                 button.newFeedTarget.btn-small(ng-click="addTarget(newTarget)") Add
-  .modal.hide.fade#manageUsers
-    .modal-header
-      button.close(data-dismiss="modal") x
-      h3 User Management
-    .modal-body
-      .container-fluid
-        .row-fluid
-          .span12
-            h3 Add user
-            form#addUserForm.modal-form
-              label Email Address
-              input.email(type='text')
-              label Password
-              input.password(type='password')
-              label Level
-              input.level(type='number')
-              button.addUserSubmit Submit
-        .row-fluid
-          .span12
-            h3 User List
-            table#userTable
-              thead
-                th User
-                th Level
-                th Delete
-              tbody
   .modal.hide#loadingModal
     .modal-body
       img(src='/img/pacman.gif', alt='Loading...')

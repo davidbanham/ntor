@@ -1,0 +1,32 @@
+.modal-header
+  button.close(ng-click="close()") x
+  h3 User Management
+.modal-body
+  .container-fluid
+    .row-fluid
+      .span12
+        h3 Add user
+        form#addUserForm.modal-form
+          label Email Address
+          input(type='text', ng-model="newUser.email")
+          label Password
+          input(type='password', ng-model="newUser.password")
+          label Level
+          input(type='number', ng-model="newUser.level")
+          button.btn.btn-submit(ng-click="add(newUser)") Submit
+    .row-fluid
+      .span12 {{status.status}}
+    .row-fluid
+      .span12
+        h3 User List
+        table
+          thead
+            th User
+            th Level
+            th Delete
+          tbody
+            tr(ng-repeat="user in users | orderBy:level")
+              td {{user.email}}
+              td {{user.level}}
+              td
+                button.btn.btn-danger(ng-click="remove(user)") Delete

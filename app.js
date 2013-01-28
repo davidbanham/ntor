@@ -514,23 +514,23 @@ app.post('/changePass', requiresLevel(0), function(req,res) {
 	var pass = hashPass(req.body.newPassword);
 	users[req.session.user.email].pass = pass;
 	fs.writeFileSync('data/users.json', JSON.stringify(users));
-	res.send('success');
+	res.send({status: 'success'});
 });
 
-app.post('/adduser', requiresLevel(50), function(req,res) {
+app.post('/user', requiresLevel(50), function(req,res) {
 	var pass = hashPass(req.body.password);
 	users[req.body.email] = { pass: pass, level: req.body.level };
 	fs.writeFileSync('data/users.json', JSON.stringify(users));
-	res.send('success');
+	res.send({status: 'success'});
 });
 
-app.post('/delUser', requiresLevel(50), function(req,res) {
-	delete users[req.body.email];
+app.del('/user', requiresLevel(50), function(req,res) {
+	delete users[req.query.email];
 	fs.writeFileSync('data/users.json', JSON.stringify(users));
-	res.send('success');
+	res.send({status: 'success'});
 });
 
-app.get('/listUsers', requiresLevel(50), function(req,res) {
+app.get('/user', requiresLevel(50), function(req,res) {
 	var userList = [];
 	for ( var x in users ) {
 		userList.push({email: x, level: users[x].level});

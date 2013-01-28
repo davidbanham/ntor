@@ -1,1 +1,1 @@
-angular.module('ntor', ['torrentsService', 'searchService', 'tagService', 'socketService', 'feedService', 'ui.bootstrap.dialog']);
+angular.module('ntor', ['torrentsService', 'searchService', 'tagService', 'socketService', 'feedService', 'userService', 'ui.bootstrap.dialog']);

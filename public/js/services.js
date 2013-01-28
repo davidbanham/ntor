@@ -47,6 +47,11 @@ angular.module('feedService', ['ngResource', 'SharedServices']).
 	return $resource('feed/:action/:id', {}, {
 	})
 })
+angular.module('userService', ['ngResource', 'SharedServices']).
+	factory('User', function($resource){
+	return $resource('user/', {}, {
+	})
+})
 angular.module('socketService', []).
 	factory('Socket', function($rootScope) {
 		var Socket = io.connect();

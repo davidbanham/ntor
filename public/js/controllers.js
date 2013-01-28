@@ -114,6 +114,13 @@ function UtilityCtrl($scope, $dialog, Tag) {
 		}
 		$dialog.dialog(opts).open()
 	}
+	$scope.openManageUsers = function() {
+		var opts = {
+			templateUrl: 'partial/manageUsers'
+			, controller: 'ManageUserCtrl'
+		}
+		$dialog.dialog(opts).open()
+	}
 	$scope.openTagManager = function() {
 		var opts = {
 			backdrop: true
@@ -145,6 +152,24 @@ function TagCtrl($scope, dialog, Tag){
 		dialog.close(tag);
 	};
 };
+function ManageUserCtrl($scope, User, dialog) {
+	$scope.close = function() {
+		dialog.close();
+	};
+	$scope.users = User.query();
+	$scope.remove = function(user){
+		User.remove(user, function(res) {
+			$scope.status = res;
+			$scope.users = User.query();
+		});
+	};
+	$scope.add = function(newUser) {
+		User.save(newUser, function(res) {
+			$scope.status = res;
+			$scope.users = User.query();
+		});
+	};
+}
 function ChangePasswordCtrl($scope, $http, dialog) {
 	$scope.close = function() {
 		dialog.close();
