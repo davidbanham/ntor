@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": false,
   "dependencies": {
-    "express": "2.5.8",
+    "express": "~3.0.6",
     "jade": ">= 0.0.1",
     "rtorrent": "https://github.com/FLYBYME/node-rtorrent/tarball/master",
     "nt": "~0.3.0",

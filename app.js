@@ -3,6 +3,7 @@
 */
 
 var express = require('express')
+, https = require('https')
 , RTorrent = require('rtorrent')
 , fs = require('fs')
 , nt = require('nt')
@@ -47,11 +48,9 @@ var smtpTransport = nodemailer.createTransport("SMTP",{
 	}
 });
 
-var app = module.exports = express.createServer({
-	key: fs.readFileSync('./server.key')
-	, cert: fs.readFileSync('./server.crt')
-});
-var io = socketio.listen(app);
+var app = module.exports = express();
+var server = https.createServer({key: fs.readFileSync('./server.key'), cert: fs.readFileSync('./server.crt')},app)
+var io = socketio.listen(server);
 io.set('log level', 1);
 io.set('authorization', function (data, cb) {
 	store.get(data.headers.cookie.split('=')[1], function(err, sess) {
@@ -89,6 +88,7 @@ var torrentChanges = function(torrents) {
 
 app.configure(function(){
 	app.set('views', __dirname + '/views');
+	app.set("port", process.env.PORT || 3000);
 	app.set('view engine', 'jade');
 	app.set('view options', { layout: false, pretty: true });
 	app.use(express.bodyParser());
@@ -239,10 +239,10 @@ function requiresLevel(requiredLevel) {
 						req.session.user = user;
 						req.session.user.email = authArray[0];
 						next();
-					} else res.redirect('/login', 401);
-				} else res.redirect('/login', 401);
+					} else res.redirect('/login');
+				} else res.redirect('/login');
 			});
-		} else res.redirect('/login', 401);
+		} else res.redirect('/login');
 	};
 };
 
@@ -693,8 +693,8 @@ app.get('/partial/:name', requiresLevel(0), function(req,res) {
 	res.render('partials/'+req.params.name);
 });
 
-app.listen(3000, function(){
-	console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
+server.listen(app.get("port"), function() {
+	return console.log("Express server listening on port " + app.get("port"));
 });
 
 var bytesToSize = function (bytes, precision)
