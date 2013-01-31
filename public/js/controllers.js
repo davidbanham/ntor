@@ -1,4 +1,4 @@
-function TorrentListCtrl($scope, Torrent, Socket) {
+function TorrentListCtrl($scope, Torrent, Socket, Queue) {
 	$scope.sort = {
 		column: 'created',
 		descending: true
@@ -31,7 +31,7 @@ function TorrentListCtrl($scope, Torrent, Socket) {
 				torrent.remoteButtons.push({type: "start", method: "post", style: "btn-info"});
 			}
 			if (torrent.complete === '1') {
-				//torrent.remoteButtons.push({type: "queue", method: "post", style: "btn-info"});
+				torrent.remoteButtons.push({type: "queue", method: "post", style: "btn-info"});
 			}
 			torrent.localButtons = [];
 			var pathSplit = torrent.path.split('.');
@@ -46,6 +46,9 @@ function TorrentListCtrl($scope, Torrent, Socket) {
 		mungeTorrents(data);
 	});
 	$scope.remote = function(button, torrent) {
+		if (button.type === 'queue') {
+			return addToQueue(torrent);
+		};
 		Torrent[button.method]({action: button.type, hash: torrent.hash}, function(res) {
 			if (res.error) console.error(res.error, res);
 		});
@@ -66,12 +69,59 @@ function TorrentListCtrl($scope, Torrent, Socket) {
 				break;
 		}
 	};
+	var addToQueue = function(torrent) {
+		Queue.save({target: 'item'}, torrent, function(res) {
+			console.log(res);
+		})
+	};
 }
 function DiskSpaceCtrl($scope, Socket) {
 	Socket.on('diskSpace', function(data) {
 		$scope.diskSpace = data;
 	});
 }
+function QueueCtrl($scope, Queue) {
+	$scope.queue = Queue.query();
+	$scope.bytesToSize = function (bytes, precision) {
+		{  
+			var kilobyte = 1024;
+			var megabyte = kilobyte * 1024;
+			var gigabyte = megabyte * 1024;
+			var terabyte = gigabyte * 1024;
+
+			if ((bytes >= 0) && (bytes < kilobyte)) {
+				return bytes + ' B';
+
+			} else if ((bytes >= kilobyte) && (bytes < megabyte)) {
+				return (bytes / kilobyte).toFixed(precision) + ' KB';
+
+			} else if ((bytes >= megabyte) && (bytes < gigabyte)) {
+				return (bytes / megabyte).toFixed(precision) + ' MB';
+
+			} else if ((bytes >= gigabyte) && (bytes < terabyte)) {
+				return (bytes / gigabyte).toFixed(precision) + ' GB';
+
+			} else if (bytes >= terabyte) {
+				return (bytes / terabyte).toFixed(precision) + ' TB';
+
+			} else {
+				return bytes + ' B';
+			}
+		}
+	};
+	$scope.newItem = function(item) {
+		Queue.newItem({}, item, function(res) {
+			$scope.queue = Queue.query();
+			console.log(res);
+		})
+	};
+	$scope.remove = function(item) {
+		Queue.remove({target: 'remove'}, item, function(res) {
+			$scope.queue = Queue.query();
+			console.log(res);
+		});
+	};
+};
 function FeedCtrl($scope, Feed, Tag) {
 	$scope.feedTargets = Feed.query({action: 'target'});
 	$scope.tags = Tag.query({action: 'all'});

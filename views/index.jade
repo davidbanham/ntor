@@ -32,7 +32,9 @@ html
               li
                 a(href='#tabSearch', data-toggle='tab') Search
               li
-                a#grabAuto(href='#tabAuto', data-toggle='tab') Auto
+                a(href='#tabAuto', data-toggle='tab') Auto
+              li
+                a(href='#tabQueue', data-toggle='tab') Queue
             ul.nav.pull-right
               li.dropdown
                 a.dropdown-toggle(data-toggle='dropdown', href='#') Tools
@@ -129,6 +131,23 @@ html
                   option 7
                   option 30
                 button.newFeedTarget.btn-small(ng-click="addTarget(newTarget)") Add
+        .tab-pane#tabQueue(ng-controller="QueueCtrl")
+          .row-fluid
+            .span12
+              table#autoList.table.table-striped.table-bordered
+                thead
+                  tr
+                    th
+                    th Name
+                    th Size
+                    th Progress
+                tbody
+                  tr(ng-repeat="item in queue")
+                    td
+                      button.btn.btn-danger(ng-click="remove(item)") Remove
+                    td {{item.name}}
+                    td {{bytesToSize(item.size, 1)}}
+                    td {{item.downloaded / item.size}}%
   .modal#loading
     .modal-body
       img(src='/img/pacman.gif', alt='Loading...')

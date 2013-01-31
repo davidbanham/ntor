@@ -29,6 +29,14 @@ angular.module('torrentsService', ['ngResource', 'SharedServices']).
 	});
 });
 
+angular.module('queueService', ['ngResource', 'SharedServices']).
+	factory('Queue', function($resource){
+	return $resource('queue/:target', {}, {
+		newItem: {method: 'POST', target: 'item'}
+		, remove: {method: 'POST', target: 'remove'}
+	});
+});
+
 angular.module('searchService', ['ngResource', 'SharedServices']).
 	factory('Search', function($resource){
 	return $resource('search/:engine', {engine: "@engine"}, {

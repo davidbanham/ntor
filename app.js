@@ -412,7 +412,11 @@ app.post('/addNotificationTarget', requiresLevel(0), function(req,res) {
 	res.send('success');
 });
 
-app.post('/addToQueue', requiresLevel(0), function(req,res) {
+app.get('/queue', requiresLevel(0), function(req,res) {
+	res.send(users[req.session.user.email].queue);
+});
+
+app.post('/queue/item', requiresLevel(0), function(req,res) {
 	if ( typeof users[req.session.user.email].queue === 'undefined' ) users[req.session.user.email].queue = [];
 	if ( users[req.session.user.email].queue.indexOf(req.body.path) > -1 ) return res.send('duplicate');
 	if (req.body.path === '') res.send(400, 'path blank');
@@ -421,18 +425,21 @@ app.post('/addToQueue', requiresLevel(0), function(req,res) {
 			path: req.body.path
 			, added: new Date().toISOString()
 			, claimed: false
+			, name: req.body.name
+			, size: req.body.size
+			, downloaded: 0
 		}
 		if ( exists ) {
 			users[req.session.user.email].queue.push(item);
 			fs.writeFileSync('data/users.json', JSON.stringify(users));
-			res.send('success');
+			res.send({status: 'success'});
 		} else {
 			res.send(400, 'path does not exist');
 		}
 	});
 });
 
-app.post('/claimItem', requiresLevel(0), function(req,res) {
+app.post('/queue/item/claim', requiresLevel(0), function(req,res) {
 	var queue = users[req.session.user.email].queue;
 	var found, conflict = false;
 	if ( typeof queue === 'undefined' ) return res.send('queue undef');
@@ -450,29 +457,36 @@ app.post('/claimItem', requiresLevel(0), function(req,res) {
 	res.send(found);
 });
 
-
 app.get('/clearQueue', requiresLevel(0), function(req,res) {
 	users[req.session.user.email].queue = [];
 	fs.writeFileSync('data/users.json', JSON.stringify(users));
-	res.send('success');
+	res.send({status: 'success'});
 });
 
-app.post('/removeFromQueue', requiresLevel(0), function(req,res) {
-	if ( typeof users[req.session.user.email].queue === 'undefined' ) return res.send('queue undef');
-	if ( users[req.session.user.email].queue.length === 0 ) return res.send('length 0');
-	if ( req.body.path !== users[req.session.user.email].queue[0].path ) return res.send('item not found');
-	users[req.session.user.email].queue.shift();
+app.post('/queue/remove', requiresLevel(0), function(req,res) {
+	var queue = users[req.session.user.email].queue;
+	if ( typeof queue === 'undefined' ) return res.send(400, {status: 'error', message: 'queue undef'});
+	if ( queue.length === 0 ) return res.send(400, {status: 'error', message: 'Nothing in the queue'});
+	var pos = -1;
+	for ( var i = 0 ; i < queue.length ; i++ ) {
+		if (queue[i].path == req.body.path) {
+			pos = i;
+			break;
+		}
+	};
+	if ( pos < 0 ) return res.send(400, {status: 'error', message: 'item not found'});
+	queue.splice(pos, 1);
 	fs.writeFileSync('data/users.json', JSON.stringify(users));
-	res.send(200);
+	res.send({status: 'success'});
 });
 
-app.get('/queueItem', requiresLevel(0), function(req,res) {
+app.get('/queue/item', requiresLevel(0), function(req,res) {
 	if(typeof users[req.session.user.email].queue === 'undefined') return res.send('');
 	if(typeof users[req.session.user.email].queue[0] === 'undefined') return res.send('');
 	res.send(users[req.session.user.email].queue[0]);
 });
 
-app.get('/queueItem/pathOnly', requiresLevel(0), function(req,res) {
+app.get('/queue/item/path', requiresLevel(0), function(req,res) {
 	if(typeof users[req.session.user.email].queue === 'undefined') return res.send('');
 	if(typeof users[req.session.user.email].queue[0] === 'undefined') return res.send('');
 	res.send(users[req.session.user.email].queue[0].path);
@@ -506,10 +520,6 @@ app.get('/tar', requiresLevel(0), function(req,res) {
 			res.end();
 		}
 	});
-});
-
-app.get('/showQueue', requiresLevel(0), function(req,res) {
-	res.send(users[req.session.user.email].queue);
 });
 
 app.post('/changePass', requiresLevel(0), function(req,res) {
