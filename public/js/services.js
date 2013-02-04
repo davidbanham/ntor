@@ -79,12 +79,12 @@ angular.module('stringSimilarity', []).
 });
 angular.module('tagService', ['ngResource', 'SharedServices']).
 	factory('Tag', function($resource){
-	return $resource('tag/:action/', {}, {
+	return $resource('tag/:action/', {action: '@action'}, {
 	})
 })
 angular.module('feedService', ['ngResource', 'SharedServices']).
 	factory('Feed', function($resource){
-	return $resource('feed/:action/:id', {}, {
+	return $resource('feed/:action/:id', {action: '@action', id: '@id'}, {
 	})
 })
 angular.module('userService', ['ngResource', 'SharedServices']).
