@@ -487,9 +487,7 @@ app.get('/tar', requiresLevel(0), function(req,res) {
 	res.setHeader('Content-Disposition', 'attachment; filename='+fileName);
 
 	// Keep writing stdout to res
-	tar.stdout.on('data', function (data) {
-		res.write(data);
-	});
+	tar.stdout.pipe(res,{ end: false });
 
 	tar.stderr.on('data', function (data) {
 		// Uncomment to see the files being added
