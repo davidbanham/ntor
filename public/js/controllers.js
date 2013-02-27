@@ -192,7 +192,7 @@ function TagCtrl($scope, dialog, Tag, stringSimilarityService){
 			, dist: null
 		}
 		for ( var i = 0 ; i < tags.length ; i++ ) {
-			if ( typeof tags[i] == 'undefined' ) continue;
+			if ( typeof tags[i].elements == 'undefined' ) continue;
 			dist = stringSimilarityService.calc(tags[i].elements.join('/'), target);
 			if (best.dist === null || dist > best.dist) {
 				best = {
