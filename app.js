@@ -484,7 +484,7 @@ app.get('/tar', requiresLevel(0), function(req,res) {
 
 	res.contentType('tar');
 	var fileName = path.basename(req.query.path);
-	res.setHeader('Content-Disposition', 'attachment; filename='+fileName);
+	res.setHeader('Content-Disposition', 'attachment; filename='+fileName+'.tar');
 
 	// Keep writing stdout to res
 	tar.stdout.pipe(res,{ end: false });
