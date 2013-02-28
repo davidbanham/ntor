@@ -147,7 +147,7 @@ html
                       button.btn.btn-danger(ng-click="remove(item)") Remove
                     td {{item.name}}
                     td {{bytesToSize(item.size, 1)}}
-                    td {{item.downloaded / item.size}}%
+                    td {{(item.downloaded / item.size * 100).toFixed(2)}}%
   .modal#loading
     .modal-body
       img(src='/img/pacman.gif', alt='Loading...')

@@ -60,12 +60,27 @@ io.enable('browser client gzip');          // gzip the file
 io.set('authorization', function (data, cb) {
 	var cook = cookie.parse(data.headers.cookie);
 	var sessionID = connect.utils.parseSignedCookie(cook['ntor.sid'], conf.general.cookieSecret);
+	data.sessionID = sessionID;
 	if (cook['ntor.sid'] == sessionID) {
 		return cb('Invalid cookie', false)
 	}
 	return cb(null, true);
 });
 io.sockets.on('connection', function(socket) {
+	handshake = socket.manager.handshaken;
+	for (id in handshake) {
+		store.get(handshake[id].sessionID, function(err, sess) {
+			sess.socketID = id;
+			store.set(handshake[id].sessionID, sess);
+			socket.join(sess.user.email);
+			socket.on('online', function(data) {
+				io.sockets.in(sess.user.email).emit('online', data)
+			});
+			socket.on('progress', function(data) {
+				io.sockets.in(sess.user.email).volatile.emit('progress', data)
+			});
+		});
+	};
 	socket.emit('diskSpace', freeDiskSpace);
 });
 
@@ -82,7 +97,6 @@ var sessionMunger = function(req,res,next) {
 	if ( typeof req.query.sessu !== 'undefined' ) {
 		req.cookies['ntor.sid'] = req.query.sessu;
 	};
-	req.ntor = req.cookies['ntor.sid'];
 	next();
 }
 
@@ -101,7 +115,7 @@ app.configure(function(){
 	app.use(express.methodOverride());
 	app.use(express.cookieParser());
 	app.use(sessionMunger);
-	app.use(express.session({key: 'ntor.sid', secret: conf.general.cookieSecret, store: store, cookie: { maxAge: 14 * 24 * 60 * 60 * 1000 } }));
+	app.use(express.session({key: 'ntor.sid', secret: conf.general.cookieSecret, store: store, cookie: { httpOnly: false, maxAge: 14 * 24 * 60 * 60 * 1000 } }));
 	app.use(app.router);
 	app.use(express.static(__dirname + '/public'));
 	//app.use(express.directory(__dirname + '/public'));
@@ -262,6 +276,11 @@ app.get('/', requiresLevel(0), function(req,res) {
 	res.render('index');
 });
 
+app.get('/checkAuth', function(req,res) {
+	if (req.session.user) res.send(200, {sid: cookie.parse(req.headers.cookie)['ntor.sid'], email: req.session.user.email})
+	else res.send(403)
+});
+
 app.get('/login', function(req,res) {
 	res.render('login');
 });
@@ -276,6 +295,11 @@ app.post('/login', function(req,res) {
 			res.send('fail', 403);
 		}
 	})
+});
+
+app.get('/logout', function(req,res) {
+	req.session.destroy();
+	res.redirect('/login');
 });
 
 var fakeApache = function(req, res) {
@@ -432,6 +456,7 @@ app.post('/queue/item', requiresLevel(0), function(req,res) {
 		if ( exists ) {
 			users[req.session.user.email].queue.push(item);
 			fs.writeFileSync('data/users.json', JSON.stringify(users));
+			io.sockets.in(req.session.user.email).emit('queueItem', {action: 'push', item: item})
 			res.send({status: 'success'});
 		} else {
 			res.send(400, 'path does not exist');
@@ -477,6 +502,7 @@ app.post('/queue/remove', requiresLevel(0), function(req,res) {
 	if ( pos < 0 ) return res.send(400, {status: 'error', message: 'item not found'});
 	queue.splice(pos, 1);
 	fs.writeFileSync('data/users.json', JSON.stringify(users));
+	io.sockets.in(req.session.user.email).emit('queueItem', {action: 'delete', path: req.body.path})
 	res.send({status: 'success'});
 });
 

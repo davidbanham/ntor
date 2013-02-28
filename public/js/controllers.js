@@ -80,7 +80,13 @@ function DiskSpaceCtrl($scope, Socket) {
 		$scope.diskSpace = data;
 	});
 }
-function QueueCtrl($scope, Queue) {
+function QueueCtrl($scope, Queue, Socket) {
+	Socket.on('progress', function(data) {
+		$scope.queue[0].downloaded = data.totalDown;
+	});
+	Socket.on('queueItem', function(data) {
+		$scope.queue = Queue.query();
+	});
 	$scope.queue = Queue.query();
 	$scope.bytesToSize = function (bytes, precision) {
 		{  
