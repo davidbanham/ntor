@@ -70,6 +70,7 @@ io.sockets.on('connection', function(socket) {
 	handshake = socket.manager.handshaken;
 	for (id in handshake) {
 		store.get(handshake[id].sessionID, function(err, sess) {
+			if (typeof sess == "undefined") return null;
 			sess.socketID = id;
 			store.set(handshake[id].sessionID, sess);
 			socket.join(sess.user.email);
