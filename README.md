@@ -60,7 +60,9 @@ Tags are intended to keep your files organised in subfolders. Give your files a 
 
 To get your content onto XBMC just add a network location with the protocol "Web server directory (HTTPS)". Most fields are obvious, path is /apacheList/tagname/ you must enter a tag name (eg: movies) and you must include the trailing slash.
 
-You can also clik the queue button next to items in the main table. This will add the directory to your queue of files to be downloaded. This is an API that lets a remote device (Say, a WD TV running WDLXTV) poll the server to see if there are any files it should be downloading, then do so. Streaming files directly from ntor is great, but sometimes files are too large to comfortably stream on a home connection. Queue the file to be downloaded and it will be waiting for you locally when you get home.o
+You can also clik the queue button next to items in the main table. This will add the directory to your queue of files to be downloaded. This is an API that lets a remote device (Say, a WD TV running WDLXTV) poll the server to see if there are any files it should be downloading, then do so. Streaming files directly from ntor is great, but sometimes files are too large to comfortably stream on a home connection. Queue the file to be downloaded and it will be waiting for you locally when you get home.
+
+You can find a nice cross-platform GUI queue client here: [https://github.com/davidbanham/ntor-client-gui](https://github.com/davidbanham/ntor-client-gui)
 
 The Auto tab polls the available feeds plugins and automatically downloads any files it matches to your search criteria, then notifies you. It will match anything that contains the string in the Yes column, but then discard it if it also matches the No column. It will only match once per n days, that you set. It will then download the file, applying the selected tags and notifying you via email if you so choose.
 
