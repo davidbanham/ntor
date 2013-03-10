@@ -98,6 +98,7 @@ var sessionMunger = function(req,res,next) {
 	if ( typeof req.query.sessu !== 'undefined' ) {
 		req.cookies['ntor.sid'] = req.query.sessu;
 	};
+	req.ntor = req.cookies['ntor.sid'];
 	next();
 }
 
