@@ -58,7 +58,11 @@ io.enable('browser client minification');  // send minified client
 io.enable('browser client etag');          // apply etag caching logic based on version number
 io.enable('browser client gzip');          // gzip the file
 io.set('authorization', function (data, cb) {
-	var cook = cookie.parse(data.headers.cookie);
+	if (data.headers.cookie) var cook = cookie.parse(data.headers.cookie);
+	if (data.query.sessu) {
+		var cook = {};
+		cook['ntor.sid'] = data.query.sessu;
+	}
 	var sessionID = connect.utils.parseSignedCookie(cook['ntor.sid'], conf.general.cookieSecret);
 	data.sessionID = sessionID;
 	if (cook['ntor.sid'] == sessionID) {
@@ -623,7 +627,6 @@ app.get('/search/:engine', requiresLevel(0), function(req,res) {
 
 var getInfoHash = function(filePath, callback) {
 	nt.read(filePath, function(err, torrent) {
-		console.log(torrent);
 		if(err) console.error('getInfoHash error'+err);
 		else callback(torrent.infoHash());
 	});
