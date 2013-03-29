@@ -112,5 +112,8 @@ angular.module('socketService', []).
 					});
 				});
 			}
+			, emit: function(eventName, data) {
+				Socket.emit(eventName, data);
+			}
 		};
 	});

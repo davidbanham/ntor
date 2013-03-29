@@ -87,6 +87,8 @@ io.sockets.on('connection', function(socket) {
 		});
 	};
 	socket.emit('diskSpace', freeDiskSpace);
+	socket.on('subscribe', function(data) { socket.join(data.room); })
+	socket.on('unsubscribe', function(data) { socket.leave(data.room); })
 });
 
 setInterval(function() {
@@ -107,7 +109,7 @@ var sessionMunger = function(req,res,next) {
 }
 
 var torrentChanges = function(torrents) {
-	io.sockets.emit('torrentChange', torrents);
+	io.sockets.in('torrentChanges').emit('torrentChange', torrents)
 }
 
 // Configuration

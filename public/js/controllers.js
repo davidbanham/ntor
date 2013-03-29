@@ -1,4 +1,5 @@
 function TorrentListCtrl($scope, Torrent, Socket, Queue) {
+	Socket.emit('subscribe', {room: 'torrentChanges'});
 	$scope.sort = {
 		column: 'created',
 		descending: true
