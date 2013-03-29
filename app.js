@@ -454,6 +454,13 @@ app.post('/queue/item', requiresLevel(0), function(req,res) {
 	}
 	if (req.body.path === '') res.send(400, 'path blank');
 	fs.exists(downloadDir+'/'+req.body.path, function(exists) {
+		if (typeof req.body.name === 'undefined') {
+			var parts = req.body.path.split('/');
+			req.body.name = parts[parts.length - 1];
+		}
+		if (typeof req.body.size === 'undefined') {
+			req.body.size = fs.statSync(downloadDir+'/'+req.body.path).size;
+		}
 		var item = {
 			path: req.body.path
 			, added: new Date().toISOString()
