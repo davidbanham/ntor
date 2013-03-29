@@ -448,7 +448,10 @@ app.get('/queue', requiresLevel(0), function(req,res) {
 
 app.post('/queue/item', requiresLevel(0), function(req,res) {
 	if ( typeof users[req.session.user.email].queue === 'undefined' ) users[req.session.user.email].queue = [];
-	if ( users[req.session.user.email].queue.indexOf(req.body.path) > -1 ) return res.send('duplicate');
+	var existingQueue = users[req.session.user.email].queue;
+	for (var i = 0 ; i < existingQueue.length ; i++) {
+		if (existingQueue[i].path === req.body.path) return res.send('duplicate');
+	}
 	if (req.body.path === '') res.send(400, 'path blank');
 	fs.exists(downloadDir+'/'+req.body.path, function(exists) {
 		var item = {
