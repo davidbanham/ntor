@@ -43,8 +43,10 @@ function TorrentListCtrl($scope, Torrent, Socket, Queue) {
 		};
 		$scope.torrents = torrents;
 	}
-	Socket.on('torrentChange', function (data) {
-		mungeTorrents(data);
+	Socket.on('torrentChange', function (delta) {
+		var torrents = $scope.torrents;
+		jsondiffpatch.patch(torrents, delta);
+		mungeTorrents(torrents);
 	});
 	$scope.remote = function(button, torrent) {
 		if (button.type === 'queue') {

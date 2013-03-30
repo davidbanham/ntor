@@ -19,6 +19,7 @@ var express = require('express')
 , socketio = require('socket.io')
 , mergify = require('./lib/mergify.js')
 , conf = require('./config/conf.js')
+, diff = require('jsondiffpatch')
 , store = new express.session.MemoryStore
 , basePath = __dirname+'/'
 , extDomain = conf.general.extDomain
@@ -91,6 +92,8 @@ io.sockets.on('connection', function(socket) {
 	socket.on('unsubscribe', function(data) { socket.leave(data.room); })
 });
 
+diff.config.objectHash = function(obj) { obj.id || JSON.stringify(obj); };
+
 setInterval(function() {
 	diskSpace(function(space) {
 		if (mergify.onlyChanges(freeDiskSpace, space) !== null) {
@@ -108,8 +111,8 @@ var sessionMunger = function(req,res,next) {
 	next();
 }
 
-var torrentChanges = function(torrents) {
-	io.sockets.in('torrentChanges').emit('torrentChange', torrents)
+var torrentChanges = function(changes) {
+	io.sockets.in('torrentChanges').emit('torrentChange', changes)
 }
 
 // Configuration
@@ -245,8 +248,8 @@ var poller = setInterval(function(){
 			for ( var i = 0 ; i < torrents.length ; i++ ) {
 				torrents[i].path = torrents[i].path.replace(downloadDir, '');
 			};
-			changes = mergify.onlyChanges(polledTorrents, torrents);
-			if (changes !== null) torrentChanges(torrents);
+			var changes = diff.diff(polledTorrents, torrents);
+			if (typeof changes !== "undefined") torrentChanges(changes);
 			polledTorrents = torrents;
 		}
 	});
