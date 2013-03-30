@@ -18,35 +18,39 @@ function TorrentListCtrl($scope, Torrent, Socket, Queue) {
 		}
 	};
 	$scope.torrents = Torrent.query(function(torrents) {
-		mungeTorrents(torrents);
+		for (item in torrents) {
+			torrents[item] = mungeTorrent(torrents[item]);
+		}
 	});
-	var mungeTorrents = function(torrents){
-		for(item in torrents) {
-			torrent = torrents[item];
-			if (torrent.complete == 1) torrent.statusText = "Complete";
-			else torrent.statusText = ((torrent.totalDown / torrent.size) * 100).toFixed(2) + '%';
-			torrent.remoteButtons = [{type: "remove", method: "post", style: "btn-danger"}];
-			if (torrent.active == 1) {
-				torrent.remoteButtons.push({type: "stop", method: "post", style: "btn-primary"});
-			} else {
-				torrent.remoteButtons.push({type: "start", method: "post", style: "btn-info"});
-			}
-			if (torrent.complete === '1') {
-				torrent.remoteButtons.push({type: "queue", method: "post", style: "btn-info"});
-			}
-			torrent.localButtons = [];
-			var pathSplit = torrent.path.split('.');
-			var extension = pathSplit[pathSplit.length - 1]; 
-			if (extension === 'mp4') torrent.localButtons.push({type: "stream", style: "btn-success"});
-			else if (extension.length === 3) torrent.localButtons.push({type: "download", style: "btn-success"});
-			else torrent.localButtons.push({text: "Download", type: "pack", style: "btn-success"}, {type: "explore", style: ""});
-		};
-		$scope.torrents = torrents;
-	}
+	var mungeTorrent = function(torrent) {
+		if (torrent.complete == 1) torrent.statusText = "Complete";
+		else torrent.statusText = ((torrent.totalDown / torrent.size) * 100).toFixed(2) + '%';
+		torrent.remoteButtons = [{type: "remove", method: "post", style: "btn-danger"}];
+		if (torrent.active == 1) {
+			torrent.remoteButtons.push({type: "stop", method: "post", style: "btn-primary"});
+		} else {
+			torrent.remoteButtons.push({type: "start", method: "post", style: "btn-info"});
+		}
+		if (torrent.complete === '1') {
+			torrent.remoteButtons.push({type: "queue", method: "post", style: "btn-info"});
+		}
+		torrent.localButtons = [];
+		var pathSplit = torrent.path.split('.');
+		var extension = pathSplit[pathSplit.length - 1]; 
+		if (extension === 'mp4') torrent.localButtons.push({type: "stream", style: "btn-success"});
+		else if (extension.length === 3) torrent.localButtons.push({type: "download", style: "btn-success"});
+		else torrent.localButtons.push({text: "Download", type: "pack", style: "btn-success"}, {type: "explore", style: ""});
+		return torrent;
+	};
 	Socket.on('torrentChange', function (delta) {
 		var torrents = $scope.torrents;
 		jsondiffpatch.patch(torrents, delta);
-		mungeTorrents(torrents);
+		for (item in delta) {
+			index = parseInt(item);
+			if (!isNaN(index)) {
+				$scope.torrents[index] = mungeTorrent($scope.torrents[index]);
+			}
+		}
 	});
 	$scope.remote = function(button, torrent) {
 		if (button.type === 'queue') {
