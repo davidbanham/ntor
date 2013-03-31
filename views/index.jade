@@ -26,8 +26,6 @@ html
           a.brand ntor
           .nav-collapse
             ul.nav
-              li
-                a(href='/incoming') Download Files
               li.active
                 a(href='#tabMain', data-toggle='tab') Main
               li
@@ -36,6 +34,8 @@ html
                 a(href='#tabAuto', data-toggle='tab') Auto
               li
                 a(href='#tabQueue', data-toggle='tab') Queue
+              li
+                a(href='/incoming') Explore Files
             ul.nav.pull-right
               li.dropdown
                 a.dropdown-toggle(data-toggle='dropdown', href='#') Tools
@@ -56,13 +56,17 @@ html
         .tab-pane.active#tabMain(ng-controller="TorrentListCtrl")
           .row-fluid
             .span12
+              .span6
+                input(type="text", ng-model="filter.name", placeholder="Filter by name")
+          .row-fluid
+            .span12
               table.table.table-bordered
                 tr
                   th Controls
                   th Actions
-                  th(ng-class="selectedCls('status')", ng-click="changeSorting('status')") Status
+                  th(ng-class="selectedCls('statusText')", ng-click="changeSorting('statusText')") Status
                   th(ng-class="selectedCls('name')", ng-click="changeSorting('name')") Torrent
-                tr(ng-repeat="torrent in torrents | orderBy:sort.column:sort.descending")
+                tr(ng-repeat="torrent in torrents | orderBy:sort.column:sort.descending | filter:filter")
                   td.btn-group
                     button.btn(ng-repeat="button in torrent.remoteButtons", ng-click="remote(button, torrent)", ng-class="button.style") {{button.text || button.type}}
                   td.btn-group
