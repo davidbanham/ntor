@@ -13,8 +13,8 @@ for (var i = 0 ; i < searchEngines.length ; i++) {
 module.exports = function(app) {
 	app.get('/search/all', app.util.requiresLevel(0), function(req,res) {
 		var engines = [];
-		for (var i = 0 ; i < searchEngines.length ; i++) {
-			engines.push({name: searchEngines[i]});
+		for ( var worker in searchWorkers ) {
+			engines.push({name: worker});
 		}
 		res.send(engines);
 	});
