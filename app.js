@@ -149,6 +149,7 @@ var searchWorkers = {};
 
 for (var i = 0 ; i < searchEngines.length ; i++) {
 	if (searchEngines[i] === '.blank') continue;
+	if (searchEngines[i] === '.gitignore') continue;
 	var searchEnginePath = './plugins/search/'+searchEngines[i];
 	searchWorkers[searchEngines[i]] = require(searchEnginePath);
 };
@@ -159,6 +160,7 @@ var feedWorkers = {};
 
 for ( var i = 0 ; i < feedEngines.length ; i++ ) {
 	if (feedEngines[i] === '.blank') continue;
+	if (feedEngines[i] === '.gitignore') continue;
 	var feedEnginePath = './plugins/feeds/'+feedEngines[i];
 	feedWorkers[feedEngines[i]] = require(feedEnginePath);
 };
