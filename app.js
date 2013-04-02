@@ -10,14 +10,12 @@ var express = require('express')
 , crypto = require('crypto')
 , cookie = require('cookie')
 , connect = require('connect')
-, child = require('child_process')
 , spawn = require('child_process').spawn
 , nodemailer = require('nodemailer')
 , mime = require('mime')
 , finder = require('findit')
 , path = require('path')
 , socketio = require('socket.io')
-, mergify = require('./lib/mergify.js')
 , conf = require('./config/conf.js')
 , diff = require('jsondiffpatch')
 , store = new express.session.MemoryStore
@@ -96,7 +94,7 @@ diff.config.objectHash = function(obj) { obj.id || JSON.stringify(obj); };
 
 setInterval(function() {
 	diskSpace(function(space) {
-		if (mergify.onlyChanges(freeDiskSpace, space) !== null) {
+		if (typeof diff.diff(freeDiskSpace, space) !== 'undefined') {
 			freeDiskSpace = space;
 			io.sockets.emit('diskSpace', space);
 		}
