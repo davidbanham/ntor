@@ -635,7 +635,7 @@ app.get('/search/:engine', requiresLevel(0), function(req,res) {
 			});
 		});
 	} catch(err) {
-		console.error(err);
+		console.error("Search worker error: ", err, req.query);
 		res.send({error:"The search engine failed. It was: "+req.params.engine});
 	};
 });
@@ -652,7 +652,7 @@ var createFullPath = function(filePath, callback) {
 	var pathStr = '';
 	for ( var i = 0; i < pathParts.length ; i++ ) {
 		pathStr += pathParts[i] + '/';
-		try{fs.mkdirSync(pathStr, 0755)}catch(err){ console.error(err) };
+		try{fs.mkdirSync(pathStr, 0755)}catch(err){ console.error("Error creating path: ", err) };
 	};
 	callback();
 };
@@ -669,8 +669,6 @@ app.post('/search/:engine', requiresLevel(0), function(req,res) {
 				rt.upload(fullFilePath, function(error) {
 					if (error) return res.send({error:error.toString()});
 					var fullDownloadPath = downloadDir+'/'+req.body.tag.elements.join('/');
-					console.log("fullDownloadPath is ", fullDownloadPath);
-					console.log("downloadDir is ", downloadDir);
 					createFullPath(fullDownloadPath, function() {
 						if (error) return res.send({error:'Failed to create download directory'});
 						rt.setPath(infoHash, fullDownloadPath, function(error, data) {
@@ -684,6 +682,7 @@ app.post('/search/:engine', requiresLevel(0), function(req,res) {
 			});
 		});
 	} catch(err) {
+	  console.log("Search worker error: ", err);
 		res.send({error:"The search engine failed. It was: "+req.params.engine});
 	};
 });
