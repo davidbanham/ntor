@@ -92,6 +92,11 @@ module.exports = function(app) {
 				res.end();
 			}
 		});
+
+		// End the tar on request exit
+		res.on('close', function() {
+			tar.kill();
+		});
 	});
 
 	app.get('/freeDiskSpace', app.util.requiresLevel(0), function(req,res) {
