@@ -1,7 +1,7 @@
 var fs = require('fs')
 , cookie = require('cookie');
 module.exports = function(app) {
-	var users = app.util.users
+	var userService = app.util.userService
 	, hashPass = app.util.hashPass;
 	app.get('/checkAuth', function(req,res) {
 		if (req.session.user) res.send(200, {sid: cookie.parse(req.headers.cookie)['ntor.sid'], email: req.session.user.email});
@@ -31,11 +31,13 @@ module.exports = function(app) {
 
 	app.post('/changePass', app.util.requiresLevel(0), function(req,res) {
 		var pass = hashPass(req.body.oldPassword);
-		if ( pass !== users[req.session.user.email].pass ) return res.send('Old password was wrong', 403);
+		if ( pass !== req.session.user.pass ) return res.send('Old password was wrong', 403);
 		pass = hashPass(req.body.newPassword);
-		users[req.session.user.email].pass = pass;
-		fs.writeFileSync('data/users.json', JSON.stringify(users));
-		res.send({status: 'success'});
+		req.session.user.pass = pass;
+		userService.store(req.session.user, function(err) {
+			if (err) return res.send(500, {status: 'fail'});
+			res.send({status: 'success'});
+		});
 	});
 
 };

@@ -13,12 +13,11 @@ var express = require('express')
 , socketio = require('socket.io')
 , conf = require('./config/conf.js')
 , diff = require('jsondiffpatch')
+, userService = require('./lib/user.js')
 , store = new express.session.MemoryStore
 , basePath = __dirname+'/'
 , freeDiskSpace = ''
 , mungedDirectory = require('./lib/middleware/directory.js')
-, tags = JSON.parse(fs.readFileSync('data/tags.json'))
-, users = JSON.parse(fs.readFileSync('data/users.json'));
 
 store.sessions = JSON.parse(fs.readFileSync('data/sessions.json'));
 express.static.mime.define({'video/mkv': ['mkv']});
@@ -183,11 +182,15 @@ var stupidApacheBytesToSize = function (bytes, precision)
 
 var authenticate = function(login, password, callback) {
 	var pass = hashPass(password);
-	if (typeof users[login] !== 'undefined') {
-		if(users[login].pass === pass) callback(users[login]);
+	userService.keys(function(err, users) {
+		if (users.indexOf(login) > -1 ) {
+			userService.get(login, function(err, user) {
+				if(user.pass === pass) callback(user);
+				else callback(null);
+			});
+		}
 		else callback(null);
-	}
-	else callback(null);
+	});
 };
 
 var hashPass = function(password) {
@@ -234,10 +237,9 @@ app.util = {
 	, downloadDir: ''
 	, getInfoHash: getInfoHash
 	, createFullPath: createFullPath
-	, users: users
+	, userService: userService
 	, basePath: basePath
 	, rt: rt
-	, tags: tags
 	, stupidApacheBytesToSize: stupidApacheBytesToSize
 	, torrentChanges: torrentChanges
 };
