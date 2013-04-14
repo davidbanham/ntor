@@ -14,12 +14,12 @@ var express = require('express')
 , conf = require('./config/conf.js')
 , diff = require('jsondiffpatch')
 , userService = require('./lib/user.js')
-, store = new express.session.MemoryStore
+, LevelStore = require('connect-level')(express)
+, store = new LevelStore
 , basePath = __dirname+'/'
 , freeDiskSpace = ''
 , mungedDirectory = require('./lib/middleware/directory.js')
 
-store.sessions = JSON.parse(fs.readFileSync('data/sessions.json'));
 express.static.mime.define({'video/mkv': ['mkv']});
 
 var app = module.exports = express();
@@ -259,10 +259,6 @@ require('./routes/tags')(app);
 server.listen(app.get("port"), function() {
 	return console.log("Express server listening on port " + app.get("port"));
 });
-
-setInterval(function(){
-	fs.writeFileSync('data/sessions.json', JSON.stringify(store.sessions));
-}, 2000);
 
 setInterval(function() {
 	diskSpace(function(space) {

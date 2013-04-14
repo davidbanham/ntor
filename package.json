@@ -14,7 +14,8 @@
     "cookie": "0.0.5",
     "connect": "~2.7.2",
     "jsondiffpatch": "0.0.7",
-    "levelup": "~0.7.0"
+    "levelup": "~0.7.0",
+    "connect-level": "0.0.2"
   },
   "readmeFilename": "README.md",
   "gitHead": "a85e84b0a28b43d55e4076330ce354e362eb924f",
