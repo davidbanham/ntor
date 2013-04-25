@@ -1,5 +1,7 @@
 var pollerError = { error: true, details: "Not yet initialised" }
 , polledTorrents = false
+, rimraf = require('rimraf')
+, path = require('path')
 , diff = require('jsondiffpatch');
 diff.config.objectHash = function(obj) { obj.id || JSON.stringify(obj); };
 
@@ -61,9 +63,25 @@ module.exports = function(app) {
 	});
 
 	app.post('/torrent/:action/:hash', app.util.requiresLevel(0), function(req,res) {
+		if (req.params.action === 'remove') deleteFiles(req.params.hash);
 		app.util.rt[req.params.action](req.params.hash, function(err) {
 			if (err) res.send({error: true, details: err});
 			else res.send({success: true});
 		});
 	});
+	var deleteFiles = function(hash) {
+		var torrent = torrentByHash(hash);
+		if (torrent === null) return;
+		var targetPath = path.join(app.util.downloadDir, torrent.path);
+		rimraf(targetPath, function(err) {
+			if (err) console.log("Error deleting files", torrent, targetPath, err);
+		});
+	};
+
+	var torrentByHash = function(hash) {
+		for (var i = 0 ; i < polledTorrents.length ; i++) {
+			if (polledTorrents[i].hash === hash) return polledTorrents[i];
+		};
+		return null;
+	};
 };
