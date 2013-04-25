@@ -7,14 +7,14 @@ module.exports = function(app) {
 	});
 
 	app.post('/tag/remove', app.util.requiresLevel(0), function(req,res) {
-		tagService.del(tag, function(err) {
+		tagService.del(req.body.tag, function(err) {
 			if (err) return res.send(500);
 			return res.send({success: true});
 		});
 	});
 
 	app.post('/tag/add', app.util.requiresLevel(0), function(req,res) {
-		tagService.store(tag, function(err) {
+		tagService.store(req.body.tag, function(err) {
 			if (err) return res.send(500);
 			return res.send({success: true});
 		});
