@@ -46,10 +46,11 @@ io.set('authorization', function (data, cb) {
 io.sockets.on('connection', function(socket) {
 	var handshake = socket.manager.handshaken;
 	for (var id in handshake) {
-		store.get(handshake[id].sessionID, function(err, sess) {
+		sessionID = handshake[id].sessionID
+		store.get(sessionID, function(err, sess) {
 			if (typeof sess == "undefined") return null;
 			sess.socketID = id;
-			store.set(handshake[id].sessionID, sess);
+			store.set(sessionID, sess);
 			socket.join(sess.user.email);
 			socket.on('online', function(data) {
 				io.sockets.in(sess.user.email).emit('online', data);
