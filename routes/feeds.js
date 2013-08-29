@@ -1,4 +1,5 @@
 var fs = require('fs')
+, path = require('path')
 , nodemailer = require('nodemailer');
 
 var feedService = require('../lib/feed.js');
@@ -17,7 +18,7 @@ module.exports = function(app) {
 		}
 	});
 
-	var feedEngines = fs.readdirSync('./plugins/feeds');
+	var feedEngines = fs.readdirSync(path.join(__dirname, './plugins/feeds'));
 
 	var feedWorkers = {};
 
