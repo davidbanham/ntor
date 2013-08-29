@@ -38,7 +38,7 @@ Create a htpasswd file to protect your rtorrent SCGI port. On Ubuntu:
 	htpasswd -c -d /etc/nginx/htpasswd rtorrent
 Then enter the password when prompted.
 
-Redirect port 443 (https) or port 80 (http) to port 3000. On Ubuntu, I do this via iptables with the following command:
+Redirect port 443 (https) to port 3000. On Ubuntu, I do this via iptables with the following command:
 
 sudo iptables -t nat -A PREROUTING -p tcp -m tcp --dport 443 -j REDIRECT --to-ports 3000
 sudo iptables-save
