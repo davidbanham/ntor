@@ -24,7 +24,11 @@ express.static.mime.define({'video/mkv': ['mkv']});
 
 var app = module.exports = express();
 var rt = new RTorrent(conf.rtorrent);
-var server = https.createServer({key: fs.readFileSync('./server.key'), cert: fs.readFileSync('./server.crt')},app);
+var sslOpts = {}
+if(process.env.NTOR_USE_SSL) {
+  sslOpts = {key: fs.readFileSync('./server.key'), cert: fs.readFileSync('./server.crt')}
+}
+var server = https.createServer(sslOpts,app);
 var io = socketio.listen(server);
 io.set('log level', 1);
 io.enable('browser client minification');  // send minified client
