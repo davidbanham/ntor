@@ -1,7 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 
-var searchEngines = fs.readdirSync(path.join(__dirname, './plugins/search'));
+var searchEngines = fs.readdirSync(path.join(__dirname, '../plugins/search'));
 
 var searchWorkers = {};
 

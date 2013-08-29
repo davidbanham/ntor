@@ -18,7 +18,7 @@ module.exports = function(app) {
 		}
 	});
 
-	var feedEngines = fs.readdirSync(path.join(__dirname, './plugins/feeds'));
+	var feedEngines = fs.readdirSync(path.join(__dirname, '../plugins/feeds'));
 
 	var feedWorkers = {};
 
